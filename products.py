@@ -1,34 +1,52 @@
-products=[]
-while True:
-	name=input('請輸入商品名稱(q離開):')
-	if name=='q':
-		break
-	price=input('請輸入商品價格：')
+import os  # operating system
 
-	# p=[]
-	# p.append(name)
-	# p.append(price)
-	#p = [name, price]    ＃程式寫法,效果同上面三行
-    
-	#products.append(p)
-	products.append([name,price]) 
+#讀取檔案
+def read_file(filename):
+	products=[]
+	with open(filename,'r',encoding='utf-8') as f:
+		for line in f:
+			if '商品,價格' in line:
+				continue
+			name,price = line.strip().split(',')
+			products.append([name,price])
+	return products		
 
-print(products)
+# 讓使用者輸入商品名稱及價格
+def user_input(products):
+	while True:
+		name=input('請輸入商品名稱(q離開):')
+		if name=='q':
+			break
+		price=input('請輸入商品價格：')
+		price=int(price)
+		products.append([name,price])
+	print(products)
+	return products
 
-for p in products:
-	print(p)
-
-for p in products:
-	print(p[0],'的價格是',p[1])
-
-# 字串可以合併 ＋,*
-# 'abc' + '123'  --> 'abc123'
-# 'abc' *  3     --> 'abcabcabc'
-
-with open('products.csv','w') as f:
+# 印出所有購買紀錄
+def print_products(products):
 	for p in products:
-		f.write(p[0]+','+p[1]+'\n') 
+		print(p[0],'的價格是',p[1])
 
+# 寫入檔案
+def write_file(filename,products):
+	with open(filename,'w',encoding='utf-8') as f:
+		f.write('商品,價格\n')
+		for p in products:
+			f.write(p[0]+','+str(p[1])+'\n') 
 
+# 主程式
+def main():
+	filename= 'products.csv'
+	if os.path.isfile(filename): #檢查檔案在不在
+		print('找到檔案了!：'+filename)
+		products = read_file(filename)
+	else:
+		print('error:找不到檔案！'+filename)
 
+	products=user_input(products)
+	print_products(products)
+	write_file('products.csv',products)	 
+
+main()
 
